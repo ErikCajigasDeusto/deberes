@@ -1,14 +1,18 @@
 package gui.main;
 
 import java.awt.BorderLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -25,12 +29,9 @@ public class MainWindow extends JFrame {
 
 	public MainWindow() {
 
+
+		//Ejercicio GUI.4 – Gestionando el cierre de la ventana
 		// Ejercicio GUI.3 – Añadiendo un menú de aplicación
-
-		// JMenuBar, JMenu y JMenuItem.
-
-		
-		
 		creador_de_Menu();
 		// Ejercicio GUI.2 – Componentes principales de la ventana
 
@@ -50,35 +51,63 @@ public class MainWindow extends JFrame {
 		// Ejercicio GUI.1
 
 		// comportamiento por defecto al cerrar la aplicacion
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.setTitle("JJ.OO.Paris 2024");
 		this.setSize(640, 480);
 		// poner a null para centralo en la pantalla
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
+		
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+			// se llama cuando el usuario intenta cerrar la ventana
+				confirmacionSalida();
+			}
+		});
 	}
 	
 	
 	/**
 	 * funcion que creara el menu desplegable
 	 */
-	public void creador_de_Menu()
+	private void creador_de_Menu()
 	{
 		JMenuBar barra = new JMenuBar();
 		this.setJMenuBar(barra);
 		
 		JMenu menu = new JMenu("Menu");
-
-		menu.add(new JMenuItem("Nuevo atleta"));
+		
+		JMenuItem nuevo = new JMenuItem("Nuevo atleta");
+		menu.add(nuevo);
 		//para crear una linea entre los valores
 		menu.addSeparator();
-		menu.add(new JMenuItem("Importar"));
-		menu.add(new JMenuItem("Exportar"));
+		
+		JMenuItem importar = new JMenuItem("Importar");
+		menu.add(importar);
+		
+		JMenuItem exportar = new JMenuItem("Exportar");
+		menu.add(exportar);
 		
 		//para crear una linea entre los valores
 		menu.addSeparator();
-		menu.add(new JMenuItem("Salir"));
+		
+		JMenuItem salir = new JMenuItem("Salir");
+		menu.add(salir);
 		barra.add(menu);
 	}
-
+	
+	/**
+	 * funcion para crear un cuadro para confirma si se desea salir de la aplicacion
+	 */
+	private void confirmacionSalida()
+	{
+		int respuesta = JOptionPane.showConfirmDialog(MainWindow.this, "Seguro desea salir?", "S/N",JOptionPane.YES_NO_OPTION);
+		
+		if(respuesta==JOptionPane.YES_OPTION)
+		{
+			System.exit(0);
+		}
+	}
+	
 }
