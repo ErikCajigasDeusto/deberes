@@ -1,5 +1,6 @@
 package domain;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,6 +56,28 @@ private static final long serialVersionUID = 1L;
 
 		// se repintara la tabla
 		fireTableDataChanged();
+	}
+	
+	/**
+	 * el ? permitira utilizar la funcion como si tuviera un template 
+	 */
+	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		// indica el tipo de cada columna de datos puede ser usado por renderers o editors
+		switch (columnIndex) {
+		
+			case 0: 
+				return Medal.Metal.class;
+				
+			case 1: 
+				return LocalDate.class;
+				
+			case 2: 
+				return String.class;
+				
+			default: 
+				return null;
+		}
 	}
 
 }

@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -165,6 +167,14 @@ public class MainWindow extends JFrame {
 		medalsJTable.getColumnModel().getColumn(0).setMaxWidth(60);
 		medalsJTable.getColumnModel().getColumn(1).setMaxWidth(80);
 		
+		
+		// configuramos el renderer de la columna de metal de la medalla
+				medalsJTable.getColumnModel().getColumn(0).setCellRenderer(new MetalTableCellRenderer());
+				
+				// este renderer lo aplicaremos a la tabla pero solo se aplicara en los casos en los que el formato lo permita
+				medalsJTable.setDefaultRenderer(LocalDate.class, 
+						new DateTableCellRenderer(
+													DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
 		// añadimos la tabla a un panel de scroll y lo devolvemos
 		return new JScrollPane(medalsJTable);
 	}
