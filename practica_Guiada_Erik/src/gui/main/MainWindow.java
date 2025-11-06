@@ -4,10 +4,13 @@ import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JMenu;
@@ -17,9 +20,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 
 import domain.Athlete;
 import domain.Athlete.Genre;
+import domain.Medal;
+import domain.Medal.Metal;
+import domain.MedalsModel;
 import main.AthleteFormPanel;
 
 public class MainWindow extends JFrame {
@@ -44,6 +51,22 @@ public class MainWindow extends JFrame {
 	private AthleteFormPanel athleteform;
 	DefaultListModel<Athlete> modeloAtletas;
 	private JButton remove;
+	
+	private Map<Integer, List<Medal>> medalsPerAthlete = Map.of(muestrarioAtletas.get(0).getCode(),
+			List.of(new Medal(Metal.SILVER, LocalDate.of(2024, 7, 29), muestrarioAtletas.get(0), "Discipline 4"),
+					new Medal(Metal.GOLD, LocalDate.of(2024, 7, 30), muestrarioAtletas.get(0), "Discipline 2")
+			),
+			muestrarioAtletas.get(1).getCode(),
+			List.of(new Medal(Metal.BRONZE, LocalDate.of(2024, 7, 29), muestrarioAtletas.get(1), "Discipline 3"),
+					new Medal(Metal.GOLD, LocalDate.of(2024, 8, 2), muestrarioAtletas.get(1), "Discipline 1")
+			),
+			muestrarioAtletas.get(2).getCode(),
+			List.of(new Medal(Metal.SILVER, LocalDate.of(2024, 8, 5), muestrarioAtletas.get(2), "Discipline 4")
+			)
+	);
+	
+	private MedalsModel medalsTableModel; // referencia al modelo de datos de la tabla de medallas
+	private JTable medalsJTable; // referencia a la tabla de medallas
 
 	public MainWindow() {
 
@@ -77,6 +100,8 @@ public class MainWindow extends JFrame {
 				Athlete selectedAthlete = jListAtletas.getSelectedValue();
 				// lo mostramos en el formulario de la derecha
 				athleteform.setAthlete(selectedAthlete);
+				List<Medal> medals = medalsPerAthlete.getOrDefault(selectedAthlete.getCode(), Collections.emptyList());
+				medalsTableModel.updateMedals(medals);
 			}
 		});
 
@@ -106,7 +131,7 @@ public class MainWindow extends JFrame {
 		athleteform = new AthleteFormPanel(countries);
 		athleteform.setEditable(false);
 		paneles.addTab("Datos", athleteform);
-		paneles.addTab("Medalla", new JPanel());
+		paneles.addTab("Medalla", createMedalPanel());
 
 		this.add(paneles, BorderLayout.CENTER);
 		// Ejercicio GUI.1
@@ -128,7 +153,22 @@ public class MainWindow extends JFrame {
 			}
 		});
 	}
+	
+	
+	private JComponent createMedalPanel() {
+		// creamos el modelo de datos de la tabla
+		medalsTableModel = new MedalsModel();
+		// creamos la tabla de medallas y le asignamos el modelo de datos
+		medalsJTable = new JTable(medalsTableModel);
 
+		// vamos a establecer el tamaño de las columnas de tipo y fecha para ajustar mejor la tabla
+		medalsJTable.getColumnModel().getColumn(0).setMaxWidth(60);
+		medalsJTable.getColumnModel().getColumn(1).setMaxWidth(80);
+		
+		// añadimos la tabla a un panel de scroll y lo devolvemos
+		return new JScrollPane(medalsJTable);
+	}
+	
 	/**
 	 * funcion que creara el menu desplegable
 	 */

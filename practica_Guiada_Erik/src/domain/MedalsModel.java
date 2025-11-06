@@ -1,0 +1,60 @@
+package domain;
+
+import java.util.Collections;
+import java.util.List;
+
+import javax.swing.table.AbstractTableModel;
+
+public class MedalsModel extends AbstractTableModel{
+
+private static final long serialVersionUID = 1L;
+	
+	private String[] columnHeaders = new String[] { "Metal", "Fecha", "Disciplina" };
+	private List<Medal> medals; // referencia a la lista de medallas
+	
+	public MedalsModel() {
+		this.medals= Collections.emptyList();
+	}
+
+	@Override
+	public int getRowCount() {
+		// TODO Auto-generated method stub
+		return medals.size();
+	}
+
+	@Override
+	public int getColumnCount() {
+		// TODO Auto-generated method stub
+		return columnHeaders.length;
+	}
+	
+	@Override
+	public String getColumnName(int column) {
+		// devolvemos el nombre de la columna indicada
+		return columnHeaders[column];
+	}
+
+	@Override
+	public Object getValueAt(int rowIndex, int columnIndex) {
+		Medal m = medals.get(rowIndex);
+		switch (columnIndex) {
+			case 0: 
+					return m.getMetal();
+			
+			case 1: 
+					return m.getMedalDate();
+			case 2: 
+					return m.getDiscipline();
+			default: 
+					return null;
+		}
+	}
+	
+	public void updateMedals(List<Medal> medals) {
+		this.medals = medals;
+
+		// se repintara la tabla
+		fireTableDataChanged();
+	}
+
+}
