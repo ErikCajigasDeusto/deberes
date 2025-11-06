@@ -3,9 +3,11 @@ package gui.main;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -17,16 +19,29 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
+import domain.Athlete;
+import domain.Athlete.Genre;
+
 public class MainWindow extends JFrame {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String[] parametrizado = new String[] { "A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9", "A10", "A11",
-			"A12", "A13", "A14", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", "B11", "B12", "B13", "B14",
-			"C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "C10", "C11", "C12", "C13", "C14" };
-
+//	private String[] parametrizado = new String[] { "A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9", "A10", "A11",
+//			"A12", "A13", "A14", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", "B11", "B12", "B13", "B14",
+//			"C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "C10", "C11", "C12", "C13", "C14" };
+	
+	private List<Athlete> muestrarioAtletas = List.of(
+			new Athlete(1, "Tonelaje, Ofelia", Genre.FEMALE, "Country 2", LocalDate.of(1990, 12, 15)),
+			new Athlete(2, "Probeta, Bacterio", Genre.MALE, "Country 4", LocalDate.of(1995, 5, 20)),
+			new Athlete(3, "nada, Paco", Genre.MALE, "Country 1", LocalDate.of(1993, 1, 30)),
+			new Athlete(4, "todo, Pepe", Genre.MALE, "Country 4", LocalDate.of(1994, 3, 29)),
+			new Athlete(5, "Rompetecho, Emilio", Genre.FEMALE, "Country 3", LocalDate.of(1998, 7, 9))
+		);
+	
+	private JList<Athlete> jListAtletas;
+	
 	public MainWindow() {
 
 
@@ -35,12 +50,18 @@ public class MainWindow extends JFrame {
 		creador_de_Menu();
 		// Ejercicio GUI.2 – Componentes principales de la ventana
 
-		JList<String> listadoAtletas = new JList<String>(parametrizado);
-
+		
+		//creando el modelo de los atletas
+		DefaultListModel<Athlete> modeloAtletas = new DefaultListModel<Athlete>();
+		modeloAtletas.addAll(muestrarioAtletas);
+		
+		jListAtletas = new JList<Athlete>(modeloAtletas);
+		
 		// ajustando el ancho de las celdas de cada valor a 200
-		listadoAtletas.setFixedCellWidth(200);
+		jListAtletas.setFixedCellWidth(200);
+		jListAtletas.setCellRenderer(new AthleteListCellRenderer());
 
-		JScrollPane desplegable = new JScrollPane(listadoAtletas);
+		JScrollPane desplegable = new JScrollPane(jListAtletas);
 		this.add(desplegable, BorderLayout.WEST);
 
 		JTabbedPane paneles = new JTabbedPane();
