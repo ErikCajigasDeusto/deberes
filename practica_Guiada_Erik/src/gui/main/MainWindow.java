@@ -4,11 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JMenu;
@@ -21,6 +19,7 @@ import javax.swing.JTabbedPane;
 
 import domain.Athlete;
 import domain.Athlete.Genre;
+import main.AthleteFormPanel;
 
 public class MainWindow extends JFrame {
 
@@ -33,19 +32,21 @@ public class MainWindow extends JFrame {
 //			"C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "C10", "C11", "C12", "C13", "C14" };
 	
 	private List<Athlete> muestrarioAtletas = List.of(
-			new Athlete(1, "Tonelaje, Ofelia", Genre.FEMALE, "Country 2", LocalDate.of(1990, 12, 15)),
-			new Athlete(2, "Probeta, Bacterio", Genre.MALE, "Country 4", LocalDate.of(1995, 5, 20)),
-			new Athlete(3, "nada, Paco", Genre.MALE, "Country 1", LocalDate.of(1993, 1, 30)),
-			new Athlete(4, "todo, Pepe", Genre.MALE, "Country 4", LocalDate.of(1994, 3, 29)),
-			new Athlete(5, "Rompetecho, Emilio", Genre.FEMALE, "Country 3", LocalDate.of(1998, 7, 9))
+			new Athlete(1, "Tonelaje, Ofelia", Genre.FEMALE, "españa", LocalDate.of(1990, 12, 15)),
+			new Athlete(2, "Probeta, Bacterio", Genre.MALE, "alemania", LocalDate.of(1995, 5, 20)),
+			new Athlete(3, "nada, Paco", Genre.MALE, "francia", LocalDate.of(1993, 1, 30)),
+			new Athlete(4, "todo, Pepe", Genre.MALE, "noruega", LocalDate.of(1994, 3, 29)),
+			new Athlete(5, "Rompetecho, Emilio", Genre.FEMALE, "españa", LocalDate.of(1998, 7, 9))
 		);
 	
 	private JList<Athlete> jListAtletas;
+	private List<String> countries = List.of("españa", "alemania", "francia", "noruega");
+	private AthleteFormPanel athleteform;
+	
 	
 	public MainWindow() {
 
 
-		
 		// Ejercicio GUI.3 – Añadiendo un menú de aplicación
 		creador_de_Menu();
 		// Ejercicio GUI.2 – Componentes principales de la ventana
@@ -60,12 +61,27 @@ public class MainWindow extends JFrame {
 		// ajustando el ancho de las celdas de cada valor a 200
 		jListAtletas.setFixedCellWidth(200);
 		jListAtletas.setCellRenderer(new AthleteListCellRenderer());
+		
+		jListAtletas.addListSelectionListener(e -> {
+			// solamente vamos a procesar el último evento de la selección en el JList
+			// esto evita procesar dos veces cada selección de items
+			if (!e.getValueIsAdjusting()) {
+				// obtenemos el atleta seleccionado del JList
+				Athlete selectedAthlete = jListAtletas.getSelectedValue();
+				// lo mostramos en el formulario de la derecha
+				athleteform.setAthlete(selectedAthlete);
+			}
+			});
 
 		JScrollPane desplegable = new JScrollPane(jListAtletas);
 		this.add(desplegable, BorderLayout.WEST);
 
 		JTabbedPane paneles = new JTabbedPane();
-		paneles.addTab("Datos", new JPanel());
+		
+		//añadiendo el formulario a la pestaña
+		athleteform = new AthleteFormPanel(countries);
+		athleteform.setEditable(false);
+		paneles.addTab("Datos", athleteform);
 		paneles.addTab("Medalla", new JPanel());
 
 		this.add(paneles, BorderLayout.CENTER);

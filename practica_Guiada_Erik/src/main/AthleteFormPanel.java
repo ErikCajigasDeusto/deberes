@@ -1,113 +1,270 @@
 package main;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
-public class AthleteFormPanel extends JPanel{
+import domain.Athlete;
+import domain.Athlete.Genre;
+import gui.main.FormDataNotValid;
+
+/**
+ * Formulario que permite visualizar o editar los datos de un atleta. Se
+ * implementa a partir de un JPanel para que pueda ser reutilizable en varias
+ * partes de la aplicación.
+ * 
+ * Esta clase proporciona un método al programador para establecer qué instancia
+ * de Athleta se va a mostrar en el panel, otro método para obtener los datos
+ * introducidos en los JTexFields y un método para establecer si el panel está
+ * en modo edición o modo visualización (no editable).
+ * 
+ * Como trabajamos con orientación a objetos podemos extender y crear
+ * componentes personalizados para posteriormente reutilizarlos además de
+ * encapsular funcionalidad.
+ */
+public class AthleteFormPanel extends JPanel {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final String formato_fecha = "dd/MM/yyyy"; // formato de fecha
+
+	private static final String DATE_FORMAT = "dd/MM/yyyy"; // formato de fecha
+	private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
+
+	private boolean editable = true; // indica si los campos del formulario son editables
 
 	private JFormattedTextField codeTextField;
-	private JTextField nombreBox;
-	private JFormattedTextField nacimientoTextField;
-	private JRadioButton male,female;
-	private JComboBox<String> paisesComboBox;
-	
-	public AthleteFormPanel()
-	{
-		//para que los componenetes se organicen verticalmente
+	private JTextField nameTextField;
+	private JComboBox<String> countryComboBox;
+	private JFormattedTextField birthDateTextField;
+	private JRadioButton male, female;
+	private ButtonGroup genreButtonGroup;
+
+	public AthleteFormPanel(List<String> countries) {
+		
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
 		
-		JLabel jCodigo = new JLabel("Código ");
+		JLabel codeJLabel = new JLabel("Código");
 		codeTextField = new JFormattedTextField(new DecimalFormat("#######"));
-		codeTextField.setColumns(3);
-		codeTextField.setAlignmentX(LEFT_ALIGNMENT);
+		codeTextField.setColumns(5);
+		codeTextField.setHorizontalAlignment(JTextField.RIGHT);
+
+		JPanel codePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		codePanel.add(codeJLabel);
+		codePanel.add(codeTextField);
+
+		// creamos un panel para guardar todo el apartado referente al nombre
+		JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		JLabel nameLabel = new JLabel("Nombre");
+		nameTextField = new JTextField(20);
+		namePanel.add(nameLabel);
+		namePanel.add(nameTextField);
+
+		// creamos un panel para guardar todo el apartado referente al genero
+		JPanel genrePanel = new JPanel();
+		male = new JRadioButton("Hombre");
+		male.setActionCommand(Genre.MALE.toString()); // código interno
+		genrePanel.add(male);
 		
-		JPanel panelCodigo = new JPanel();
-		panelCodigo.add(jCodigo);
-		panelCodigo.add(codeTextField);
-		panelCodigo.setLayout(new FlowLayout(FlowLayout.LEFT));
+		female = new JRadioButton("Mujer");
+		female.setActionCommand(Genre.FEMALE.toString()); // código interno
+		genrePanel.add(female);
+
+		// grupo para que los radio buttons sean exclusivos
+		genreButtonGroup = new ButtonGroup();
+		genreButtonGroup.add(female);
+		genreButtonGroup.add(male);
 		
+		// creamos un panel para guardar todo el apartado referente a la fecha de nacimiento
+		JPanel birthDatePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		JLabel birthDateLabel = new JLabel("Nacimiento");
+
+		DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+		birthDateTextField = new JFormattedTextField(dateFormat);
+		birthDateTextField.setColumns(6);
+		birthDateTextField.setHorizontalAlignment(JTextField.RIGHT);
+		birthDatePanel.add(birthDateLabel);
+		birthDatePanel.add(birthDateTextField);
 		
-		JLabel jNombre = new JLabel("Nombre ");
-		nombreBox = new JTextField(10);
+		// creamos un panel para guardar todo el apartado referente al pais
+		JPanel countryPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		JLabel countryLabel = new JLabel("País");
+
+		countryComboBox = new JComboBox<String>(countries.toArray(String[]::new));
+		countryPanel.add(countryLabel);
+		countryPanel.add(countryComboBox);
+
+		// añadimos los componentes al panel
+		add(codePanel);
+		add(namePanel);
+		add(genrePanel);
+		add(birthDatePanel);
+		add(countryPanel);
+
 		
-		JPanel panelNombre = new JPanel();
-		panelNombre.add(jNombre);
-		panelNombre.add(nombreBox);
-		panelNombre.setLayout(new FlowLayout(FlowLayout.LEFT));
-		
-		
-		JPanel generoPanel = new JPanel();
-		male = new JRadioButton("hombre");
-		female = new JRadioButton("mujer");
-		
-		ButtonGroup grupoBotones = new ButtonGroup();
-		grupoBotones.add(male);
-		grupoBotones.add(female);
-		
-		generoPanel.add(male);
-		generoPanel.add(female);
-		
-		JPanel nacimientoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		JLabel nacimiento = new JLabel("Nacimiento: ");
-		
-		DateFormat formatoFecha = new SimpleDateFormat(formato_fecha);
-		nacimientoTextField = new JFormattedTextField(formatoFecha);
-		
-		nacimientoTextField.setColumns(6);
-		nacimientoTextField.setHorizontalAlignment(JTextField.CENTER);
-		
-		nacimientoPanel.add(nacimiento);
-		nacimientoPanel.add(nacimientoTextField);
-		
-		
-		JPanel panelPais = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		JLabel paises = new JLabel("Pais: ");
-		String[] listapaises = new String[] {"españa","alemania","francia","noruega"};
-		paisesComboBox = new JComboBox(listapaises);
-		panelPais.add(paises);
-		panelPais.add(paisesComboBox);
-		
-		this.add(panelCodigo);
-		this.add(panelNombre);
-		this.add(nacimientoPanel);
-		this.add(panelPais);
-		
-		Border borde = BorderFactory.createTitledBorder("Atleta");
-		this.setBorder(borde);
+		Border formBorder = BorderFactory.createTitledBorder("Atleta");
+		setBorder(formBorder);
 	}
-	
+
+	/**
+	 * Establece el atleta cuyos datos se visualizan en el formulario.
+	 * 
+	 * @param athlete atleta cuyos datos se visualizan en el formulario
+	 */
+	public void setAthlete(Athlete athlete) {
+		// rellenamos los campos con los datos del atleta
+		codeTextField.setText(Integer.toString(athlete.getCode()));
+		nameTextField.setText(athlete.getName());
+
+		// convertimos la fecha al formato especificado para visualizar en el form
+		birthDateTextField.setText(athlete.getBirthdate().format(dateFormatter));
+
+		// seleccionamos el radio button según el género del atleta
+		switch (athlete.getGenre()) {
+		case MALE:
+			male.setSelected(true);
+			break;
+
+		case FEMALE:
+			female.setSelected(true);
+			break;
+		}
+
+		// seleccionamos el país del desplegable según el del atleta
+		countryComboBox.setSelectedItem(athlete.getCountry());
+	} 
+
+	/**
+	 * Obtiene un nuevo atleta a partir de los datos del formulario.
+	 * 
+	 * @return un nuevo atleta creado a partir de los datos del formulario
+	 */
+	public Athlete getAthlete() throws FormDataNotValid {
+		// comprobamos si el campo esta vacío o con espacios
+		if (codeTextField.getText().isBlank())
+			throw new FormDataNotValid("El código no puede ser vacío");
+		
+		// comprobamos si el campo esta vacío o con espacios
+		if (nameTextField.getText().isBlank())
+			throw new FormDataNotValid("El nombre no puede estar vacío");
+		
+		// alguna de las opciones debe estar seleccionada
+		if (!male.isSelected() && !female.isSelected())
+			throw new FormDataNotValid("Se debe seleccionar un género");
+		
+		// comprobamos si el campo esta vacío o con espacios
+		if (birthDateTextField.getText().isBlank())
+			throw new FormDataNotValid("La fecha no puede ser vacía");
+			
+		// intentamos construir el objeto con los datos del formulario
+		// si hay algún error lanzamos la excepción con el mensaje adecuado
+		try {
+			return new Athlete(
+				Integer.parseInt(codeTextField.getText()),
+				nameTextField.getText(),
+				Genre.valueOf(genreButtonGroup.getSelection().getActionCommand()),
+				countryComboBox.getItemAt(countryComboBox.getSelectedIndex()),
+				LocalDate.parse(birthDateTextField.getText(), dateFormatter)
+			);
+		} catch (NumberFormatException e) {
+			throw new FormDataNotValid("Se esperaba un código numérico", e);
+		} catch (DateTimeException e) {
+			throw new FormDataNotValid("La fecha no tiene el formato esperado", e);
+		}
+	}
+
+	/**
+	 * Establece el modo en el que se encuentra el formulario.
+	 * 
+	 * @param editable true si el formulario debe ser editable, false si no
+	 */
+	public void setEditable(boolean editable) {
+		this.editable = editable;
+		
+		// establecemos los componentes editables al estado indicado
+		codeTextField.setEditable(editable);
+		nameTextField.setEditable(editable);
+		birthDateTextField.setEditable(editable);		
+		male.setEnabled(editable);
+		female.setEnabled(editable);
+		countryComboBox.setEnabled(editable);
+	}
+
+	/**
+	 * Indica si los campos del panel están habilitados para modificar los datos.
+	 * 
+	 * @return true si los campos son editables, false en caso contrario
+	 */
+	public boolean isEditable() {
+		return editable;
+	}
+
+	// programa principal para testear el panel en una ventana propia
+	// esto permite que pueda ser desarrollado sin depender de otra UI
 	public static void main(String[] args) {
-		AthleteFormPanel testForm = new AthleteFormPanel();
+		// datos de prueba para el panel
+		Athlete sampleAthlete = new Athlete(1111111, "Apellido, Nombre 1", Genre.FEMALE, "Country 3",
+				LocalDate.of(1990, 12, 15));
+		List<String> countries = List.of("españa", "alemania", "francia", "noruega");
+
+		// creamos el panel de prueba y establecemos los datos de ejemplo a visualizar
+		AthleteFormPanel testForm = new AthleteFormPanel(countries);
+		testForm.setAthlete(sampleAthlete);
+
+		// podemos hacer que el panel no sea editable para probar
 
 		// creamos una ventana de prueba para visualizar el panel
 		JFrame jFrame = new JFrame("Ventana de prueba");
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jFrame.add(testForm);
 
+		// vamos a añadir un botón en la parte inferior para probar la validación
+		// de datos y otro para hablitar/deshabilitar el formulario
+		JPanel southPanel = new JPanel();
+
+		// botón para la lanzar la validación del formulario
+		JButton validateButton = new JButton("Obtener datos");
+		southPanel.add(validateButton);
+		validateButton.addActionListener(event -> {
+			try {
+				// intentamos obtener el athleta con los datos del formulario
+				System.out.println("Datos introducidos: " + testForm.getAthlete());
+			} catch (FormDataNotValid e) {
+				// escribimos por consola los posibles errores 
+				System.out.println("Datos del formulario no validos. Motivo: " + e.getMessage());
+			}
+		});
+
+		// botón que habilita/deshabilita los campos del formulario
+		JButton toggleButton = new JButton("Habilitar/deshabilitar");
+		southPanel.add(toggleButton);
+		toggleButton.addActionListener(e -> testForm.setEditable(!testForm.isEditable()));
+
+		// panel con botones de prueba al sur del BorderLayout
+		jFrame.add(southPanel, BorderLayout.SOUTH);
+
 		jFrame.pack();
 		jFrame.setVisible(true);
 	}
-
 }
