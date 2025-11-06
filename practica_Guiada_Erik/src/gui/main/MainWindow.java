@@ -42,7 +42,7 @@ public class MainWindow extends JFrame {
 	private JList<Athlete> jListAtletas;
 	private List<String> countries = List.of("españa", "alemania", "francia", "noruega");
 	private AthleteFormPanel athleteform;
-	
+	DefaultListModel<Athlete> modeloAtletas;
 	
 	public MainWindow() {
 
@@ -53,7 +53,7 @@ public class MainWindow extends JFrame {
 
 		
 		//creando el modelo de los atletas
-		DefaultListModel<Athlete> modeloAtletas = new DefaultListModel<Athlete>();
+		modeloAtletas = new DefaultListModel<Athlete>();
 		modeloAtletas.addAll(muestrarioAtletas);
 		
 		jListAtletas = new JList<Athlete>(modeloAtletas);
@@ -117,6 +117,21 @@ public class MainWindow extends JFrame {
 		JMenu menu = new JMenu("Menu");
 		
 		JMenuItem nuevo = new JMenuItem("Nuevo atleta");
+		
+		nuevo.addActionListener(evento -> {
+			NewAthleteDialog newAthleteDialog = new NewAthleteDialog(countries);
+			int result = newAthleteDialog.showDialog(this);
+			if (result == JOptionPane.OK_OPTION) {
+				// si el usuario ha pulsado la opción guardar
+				// obtenemos el nuevo atleta y lo añadimos a la lista de atletas
+				try {
+					modeloAtletas.addElement(newAthleteDialog.getAhtlete());
+				} catch (FormDataNotValid e) {
+					// no hacemos nada porque sabemos que el atleta debe
+					// ser válido en este punto
+				}
+			}
+		});
 		menu.add(nuevo);
 		//para crear una linea entre los valores
 		menu.addSeparator();
