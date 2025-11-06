@@ -30,7 +30,7 @@ public class MainWindow extends JFrame {
 	public MainWindow() {
 
 
-		//Ejercicio GUI.4 – Gestionando el cierre de la ventana
+		
 		// Ejercicio GUI.3 – Añadiendo un menú de aplicación
 		creador_de_Menu();
 		// Ejercicio GUI.2 – Componentes principales de la ventana
@@ -58,6 +58,7 @@ public class MainWindow extends JFrame {
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 		
+		//Ejercicio GUI.4 – Gestionando el cierre de la ventana
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
