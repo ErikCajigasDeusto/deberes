@@ -133,26 +133,34 @@ public class AthleteFormPanel extends JPanel {
 	 * @param athlete atleta cuyos datos se visualizan en el formulario
 	 */
 	public void setAthlete(Athlete athlete) {
-		// rellenamos los campos con los datos del atleta
-		codeTextField.setText(Integer.toString(athlete.getCode()));
-		nameTextField.setText(athlete.getName());
+		
+		if(athlete==null)
+		{
+			clear();
+		}else
+		{
+			// rellenamos los campos con los datos del atleta
+			codeTextField.setText(Integer.toString(athlete.getCode()));
+			nameTextField.setText(athlete.getName());
 
-		// convertimos la fecha al formato especificado para visualizar en el form
-		birthDateTextField.setText(athlete.getBirthdate().format(dateFormatter));
+			// convertimos la fecha al formato especificado para visualizar en el form
+			birthDateTextField.setText(athlete.getBirthdate().format(dateFormatter));
 
-		// seleccionamos el radio button según el género del atleta
-		switch (athlete.getGenre()) {
-		case MALE:
-			male.setSelected(true);
-			break;
+			// seleccionamos el radio button según el género del atleta
+			switch (athlete.getGenre()) {
+			case MALE:
+				male.setSelected(true);
+				break;
 
-		case FEMALE:
-			female.setSelected(true);
-			break;
+			case FEMALE:
+				female.setSelected(true);
+				break;
+			}
+
+			// seleccionamos el país del desplegable según el del atleta
+			countryComboBox.setSelectedItem(athlete.getCountry());
 		}
-
-		// seleccionamos el país del desplegable según el del atleta
-		countryComboBox.setSelectedItem(athlete.getCountry());
+		
 	} 
 
 	/**
@@ -218,6 +226,16 @@ public class AthleteFormPanel extends JPanel {
 	 */
 	public boolean isEditable() {
 		return editable;
+	}
+	
+	public void clear()
+	{
+		codeTextField.setText("");
+		nameTextField.setText("");
+		birthDateTextField.setText("");
+		male.setSelected(false);
+		female.setSelected(false);
+		countryComboBox.setSelectedIndex(0);
 	}
 
 	// programa principal para testear el panel en una ventana propia
