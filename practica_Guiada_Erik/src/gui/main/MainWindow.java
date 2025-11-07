@@ -1,11 +1,15 @@
 package gui.main;
 
 import java.awt.BorderLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -54,16 +58,17 @@ public class MainWindow extends JFrame {
 	DefaultListModel<Athlete> modeloAtletas;
 	private JButton remove;
 	
-	private Map<Integer, List<Medal>> medalsPerAthlete = Map.of(muestrarioAtletas.get(0).getCode(),
-			List.of(new Medal(Metal.SILVER, LocalDate.of(2024, 7, 29), muestrarioAtletas.get(0), "Discipline 4"),
-					new Medal(Metal.GOLD, LocalDate.of(2024, 7, 30), muestrarioAtletas.get(0), "Discipline 2")
+	private Map<Integer, List<Medal>> medalsPerAthlete = Map.of(
+			muestrarioAtletas.get(0).getCode(), new ArrayList<>(Arrays.asList(
+					new Medal(Metal.SILVER, LocalDate.of(2024, 7, 29), muestrarioAtletas.get(0), "Discipline 1"),
+					new Medal(Metal.GOLD, LocalDate.of(2024, 7, 30), muestrarioAtletas.get(0), "Discipline 2"))
 			),
-			muestrarioAtletas.get(1).getCode(),
-			List.of(new Medal(Metal.BRONZE, LocalDate.of(2024, 7, 29), muestrarioAtletas.get(1), "Discipline 3"),
-					new Medal(Metal.GOLD, LocalDate.of(2024, 8, 2), muestrarioAtletas.get(1), "Discipline 1")
+			muestrarioAtletas.get(1).getCode(), new ArrayList<>(Arrays.asList(
+					new Medal(Metal.BRONZE, LocalDate.of(2024, 7, 29), muestrarioAtletas.get(1), "Discipline 1"),
+					new Medal(Metal.GOLD, LocalDate.of(2024, 8, 2), muestrarioAtletas.get(1), "Discipline 3"))
 			),
-			muestrarioAtletas.get(2).getCode(),
-			List.of(new Medal(Metal.SILVER, LocalDate.of(2024, 8, 5), muestrarioAtletas.get(2), "Discipline 4")
+			muestrarioAtletas.get(2).getCode(), new ArrayList<>(Arrays.asList(
+					new Medal(Metal.SILVER, LocalDate.of(2024, 8, 5), muestrarioAtletas.get(2), "Discipline 4"))
 			)
 	);
 	
@@ -136,6 +141,53 @@ public class MainWindow extends JFrame {
 		paneles.addTab("Medalla", createMedalPanel());
 
 		this.add(paneles, BorderLayout.CENTER);
+		
+		// añadimos un evento de teclado a la lista de atletas
+		jListAtletas.addKeyListener(new KeyAdapter() {
+					@Override
+					public void keyPressed(KeyEvent e) {
+						// si el usuario ha pulsado la tecla SUPR
+						if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+							// se borran los atletas si hay seleccionados
+							if (jListAtletas.getSelectedIndices().length > 0) {
+								showRemoveAthletesDialog();
+							}
+						}
+
+						// si el usuario pulsa la tecla CTRL + M
+						if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_M) {
+							// se comprueba que algún atleta seleccionado
+							if (jListAtletas.getSelectedIndices().length > 0) {
+								// se cambia al panel de medallas
+								paneles.setSelectedIndex(1);
+								
+								// se crea una nueva medalla para el atleta seleccionado
+								// y se añade al modelo de datos de la tabla
+								Athlete selectedAthlete = jListAtletas.getSelectedValue();
+								Medal newMedal = new Medal(Metal.BRONZE, LocalDate.now(), selectedAthlete, "Nueva disciplina");
+								medalsTableModel.addMedal(newMedal);
+								
+								// seleccionamos en la tabla la nueva medalla
+								// para que el usuario pueda editarla
+								int row = medalsTableModel.getRowCount() - 1;
+								medalsJTable.setRowSelectionInterval(row, row);
+								medalsJTable.editCellAt(row, 0);
+							}
+						}
+						
+						// si el usuario pulsa la tecla CTRL + A
+						if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_A) {
+							// muestra el diálogo de para añadir un nuevo atleta
+							showNewAthleteDialog();
+						}
+						
+						// si el usuario pulsa la tecla ESC
+						if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+		                    // se deselecciona cualquier atleta seleccionado
+							jListAtletas.clearSelection();
+						}
+					}
+				});
 		// Ejercicio GUI.1
 
 		// comportamiento por defecto al cerrar la aplicacion

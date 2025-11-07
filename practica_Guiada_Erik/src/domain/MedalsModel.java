@@ -103,5 +103,12 @@ private static final long serialVersionUID = 1L;
 			break;
 		}
 	}
+	
+	//funcion para añadir medallas segun la longitud de la lista de medallas
+	public void addMedal(Medal medal) {
+		medals.add(medal);
+		
+       fireTableRowsInserted(medals.size() - 1, medals.size() - 1);
+    }
 
 }
