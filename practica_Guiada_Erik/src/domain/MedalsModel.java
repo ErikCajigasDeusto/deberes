@@ -1,6 +1,7 @@
 package domain;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -106,7 +107,15 @@ private static final long serialVersionUID = 1L;
 	
 	//funcion para añadir medallas segun la longitud de la lista de medallas
 	public void addMedal(Medal medal) {
+		
+		//en caso de que no haya medallas en la lista
+		if (medals.isEmpty())
+		{
+			this.medals = new  ArrayList<Medal>();
+		}
 		medals.add(medal);
+		
+			
 		
        fireTableRowsInserted(medals.size() - 1, medals.size() - 1);
     }
