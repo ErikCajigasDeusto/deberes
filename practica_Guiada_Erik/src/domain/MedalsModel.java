@@ -79,5 +79,29 @@ private static final long serialVersionUID = 1L;
 				return null;
 		}
 	}
+	
+	
+	@Override
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		return true;
+	}
+
+	@Override
+	public void setValueAt(Object value, int rowIndex, int columnIndex) {
+		
+		// fila modificada
+		Medal m = medals.get(rowIndex); 
+		switch (columnIndex) {
+		case 0:
+			m.setMetal((Medal.Metal) value);
+			break;
+		case 1:
+			m.setMedalDate((LocalDate) value);
+			break;
+		case 2:
+			m.setDiscipline((String) value);
+			break;
+		}
+	}
 
 }

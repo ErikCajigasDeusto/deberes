@@ -175,6 +175,11 @@ public class MainWindow extends JFrame {
 				medalsJTable.setDefaultRenderer(LocalDate.class, 
 						new DateTableCellRenderer(
 													DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
+				
+				medalsJTable.getColumnModel().getColumn(0).setCellEditor(new MetalTableCellEditor());
+				
+				// establecemos el editor para la segunda columna de la tabla (fecha)
+				medalsJTable.getColumnModel().getColumn(1).setCellEditor(new DateTableCellEditor());
 		// añadimos la tabla a un panel de scroll y lo devolvemos
 		return new JScrollPane(medalsJTable);
 	}
